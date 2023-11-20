@@ -33,8 +33,8 @@ class App(customtkinter.CTk):
         self.starttime = 390
         self.bank = 600
 
-        # self.starttime = 15
-        # self.bank = 15
+        self.starttime = 15
+        self.bank = 15
 
         self.time = {
             "t1":self.starttime,
@@ -53,9 +53,6 @@ class App(customtkinter.CTk):
         self.sampling = False
         self.quit()
         self.destroy()
-
-    def start(self):
-        self.mainloop()
 
     def my_time(self):
         time_string = strftime('%M:%S') # time format 
@@ -99,8 +96,19 @@ class App(customtkinter.CTk):
         self.frame_left_name.grid(row=0, column=0, sticky="nswe",padx=int(20*self.WScale), pady=int(20*self.WScale),columnspan=3)
         self.p1 = customtkinter.CTkLabel(master=self.frame_left_name,text="Player 1",font=("Roboto Medium", int(30*self.WScale) ))  # font name and size in p
         self.p1.grid(row=1, column=0, pady=int(5*self.WScale), padx=int(10*self.WScale)) 
-        self.p1.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self.p1.place(relx=0.5, rely=0.25, anchor=tkinter.CENTER)
 
+        self.turn1_frames = []
+        self.turn1 = []
+        for n in range(16):
+            f = customtkinter.CTkFrame(master=self.frame_left_name,corner_radius=0)
+            self.turn1_frames.append(f)
+            self.turn1_frames[len(self.turn1_frames)-1].grid(row=2, column=n%8, pady=int(5*self.WScale), padx=int(10*self.WScale)) 
+            self.turn1_frames[len(self.turn1_frames)-1].place(relx=0.1+0.1*(n%8), rely=0.5+0.3*int(n/8))
+            t = customtkinter.CTkLabel(master=self.turn1_frames[len(self.turn1_frames)-1],text=str(n+1),font=("Roboto Medium", int(30*self.WScale) ))
+            self.turn1.append(t)
+            self.turn1[len(self.turn1)-1].pack()
+        
         self.timevar["t1"].set(self.timestr["t1"])
         self.frame_left_bank = customtkinter.CTkFrame(master=self.frame_left)
         self.frame_left_bank.grid(row=1, column=0, sticky="nswe",padx=int(20*self.WScale), pady=int(20*self.WScale),columnspan=3)
@@ -126,15 +134,27 @@ class App(customtkinter.CTk):
         self.frame_right_name.grid(row=0, column=0, sticky="nswe",padx=int(20*self.WScale), pady=int(20*self.WScale),columnspan=3)
         self.p2 = customtkinter.CTkLabel(master=self.frame_right_name,text="Player 2",font=("Roboto Medium", int(30*self.WScale) ))  # font name and size in p
         self.p2.grid(row=1, column=0, pady=int(5*self.WScale), padx=int(10*self.WScale)) 
-        self.p2.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self.p2.place(relx=0.5, rely=0.25, anchor=tkinter.CENTER)
 
+        self.turn2_frames = []
+        self.turn2 = []
+        for n in range(16):
+            f = customtkinter.CTkFrame(master=self.frame_right_name,corner_radius=0)
+            self.turn2_frames.append(f)
+            self.turn2_frames[len(self.turn2_frames)-1].grid(row=2, column=n%8, pady=int(5*self.WScale), padx=int(10*self.WScale)) 
+            self.turn2_frames[len(self.turn2_frames)-1].place(relx=0.1+0.1*(n%8), rely=0.5+0.3*int(n/8))
+            t = customtkinter.CTkLabel(master=self.turn2_frames[len(self.turn2_frames)-1],text=str(n+1),font=("Roboto Medium", int(30*self.WScale) ))
+            self.turn2.append(t)
+            self.turn2[len(self.turn2)-1].pack()
+            
         self.timevar["t2"].set(self.timestr["t2"])
         self.frame_right_bank = customtkinter.CTkFrame(master=self.frame_right)
         self.frame_right_bank.grid(row=1, column=0, sticky="nswe",padx=int(20*self.WScale), pady=int(20*self.WScale),columnspan=3)
         self.t2 = customtkinter.CTkLabel(master=self.frame_right_bank,textvariable=self.timevar["t2"],font=("Roboto Medium", int(52*self.WScale) ))  # font bank and size in p
         self.t2.grid(row=1, column=0, pady=int(5*self.WScale), padx=int(10*self.WScale)) 
         self.t2.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
-
+        #self.t2.configure(fg_color=("Green","Green"))        
+        
         self.timevar["b2"].set(self.timestr["b2"])
         self.frame_right_time = customtkinter.CTkFrame(master=self.frame_right)
         self.frame_right_time.grid(row=2, column=0, sticky="nswe",padx=int(20*self.WScale), pady=int(20*self.WScale),columnspan=3)
@@ -142,10 +162,20 @@ class App(customtkinter.CTk):
         self.b2.grid(row=1, column=0, pady=int(5*self.WScale), padx=int(10*self.WScale)) 
         self.b2.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
 
+        self.turns = []
+        self.active_turn = 0
+        for n in range(16):
+            self.turns.append(self.turn1[n])
+            self.turns.append(self.turn2[n])
+        
         #self.Start()        
         self.bind('<Return>', self.NextPlayer)        
 
     def NextPlayer(self,event=None):
+        self.turns[self.active_turn].configure(fg_color=("Green","Green"))
+        if self.active_turn > 0:
+            self.turns[self.active_turn-1].configure(fg_color=("Grey","Grey"))
+        self.active_turn += 1                
         print(self.ap)
         self.stop = False
         self.Pause = False
@@ -250,7 +280,7 @@ class App(customtkinter.CTk):
         else:
             print("pause")
             self.Pause=True
-
+            
     def Next(self,event=None):
         print("Next")
         if self.ap == 1:
@@ -274,9 +304,32 @@ class App(customtkinter.CTk):
         while True and not self.stop:
             time.sleep(0.1)
         self.cd.kill()
-            
+
+    def ColorFrames(self,target):
+        if target == "b1":
+            self.frame_right_bank.configure(fg_color=("Grey","Grey"))
+            self.frame_right_time.configure(fg_color=("Grey","Grey"))
+            self.frame_left_bank.configure(fg_color=("Grey","Grey"))
+            self.frame_left_time.configure(fg_color=("Green","Green"))
+        if target == "b2":
+            self.frame_right_bank.configure(fg_color=("Grey","Grey"))
+            self.frame_right_time.configure(fg_color=("Green","Green"))
+            self.frame_left_bank.configure(fg_color=("Grey","Grey"))
+            self.frame_left_time.configure(fg_color=("Grey","Grey"))
+        if target == "t1":
+            self.frame_right_bank.configure(fg_color=("Grey","Grey"))
+            self.frame_right_time.configure(fg_color=("Grey","Grey"))
+            self.frame_left_bank.configure(fg_color=("Green","Green"))
+            self.frame_left_time.configure(fg_color=("Grey","Grey"))
+        if target == "t2":
+            self.frame_right_bank.configure(fg_color=("Green","Green"))
+            self.frame_right_time.configure(fg_color=("Grey","Grey"))
+            self.frame_left_bank.configure(fg_color=("Grey","Grey"))
+            self.frame_left_time.configure(fg_color=("Grey","Grey"))
+        
     def Timer(self):
         print("timer: ",self.timer,self.time[self.timer])
+        self.ColorFrames(self.timer)
         while self.time[self.timer] > 0 and not self.stop:
             print(self.time[self.timer])
             if not self.Pause:
@@ -288,21 +341,22 @@ class App(customtkinter.CTk):
             if self.ap == 1:
                 if self.time["b1"] < 1 or self.time["t1"]:
                     if self.time[self.timer] == 11:
-                        self.cd = Process(target=self.Countdown)
+                        self.cd = threading.Thread(target=self.Countdown)
                         self.cd.start()                    
-                        self.cdmanage = threading.Thread(target=self.Countdown).start()                    
-            if not self.ap == 1:
+                        #self.cdmanage = threading.Thread(target=self.Countdown).start()                    
+            if self.ap == 2:
                 if self.time["b2"] < 1  or self.time["t2"]:
                     if self.time[self.timer] == 11:
-                        self.cd = Process(target=self.Countdown)
+                        self.cd = threading.Thread(target=self.Countdown)
                         self.cd.start()                    
-                        self.cdmanage = threading.Thread(target=self.Manage).start()                                        
+                        #self.cdmanage = threading.Thread(target=self.Manage).start()                                        
                         
         if self.time[self.timer] < 1 and not self.stop:
             if self.ap == 1:
                 self.timer = "b1"
             if self.ap == 2:
                 self.timer = "b2"
+            self.ColorFrames(self.timer)
             while self.time[self.timer] > 0 and not self.stop:
                 print(self.time[self.timer])
                 if not self.Pause:
@@ -311,14 +365,14 @@ class App(customtkinter.CTk):
                     self.timevar[self.timer].set(self.timestr[self.timer])
                     self.update_idletasks()
                 time.sleep(1)
-                if self.time[self.timer] == 12:
-                    self.cd = Process(target=self.Countdown)
+                if self.time[self.timer] == 11:
+                    self.cd = threading.Thread(target=self.Countdown)
                     self.cd.start()                    
-                    self.cdmanage = threading.Thread(target=self.Manage).start()                                        
+                    #self.cdmanage = threading.Thread(target=self.Manage).start()                                        
             
 if __name__ == "__main__":
     app = App()
-    app.start()
+    app.mainloop()
 
 
     
