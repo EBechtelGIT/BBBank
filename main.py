@@ -30,11 +30,11 @@ class App(customtkinter.CTk):
         self.WScale = self.WIDTH/1300
         print(self.HEIGHT,self.WIDTH)
 
-        self.starttime = 390
+        self.starttime = 360
         self.bank = 600
 
-        self.starttime = 15
-        self.bank = 15
+        # self.starttime = 15
+        # self.bank = 15
 
         self.time = {
             "t1":self.starttime,
