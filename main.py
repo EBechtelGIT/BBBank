@@ -45,9 +45,9 @@ class App(customtkinter.CTk):
         
         self.title("BBBank")
         self.geometry(f"{self.WIDTH}x{self.HEIGHT}")
-        self.NormalMode()
-
-        self.ap = 1
+        self.NormalMode()        
+        self.ap = int(input("Starting Player is? (1/2) "))
+        self.starting_player = self.ap
         
     def on_closing(self, event=0):
         self.sampling = False
@@ -165,9 +165,16 @@ class App(customtkinter.CTk):
         self.turns = []
         self.active_turn = 0
         for n in range(16):
-            self.turns.append(self.turn1[n])
-            self.turns.append(self.turn2[n])
-        
+            if n < 8:
+                self.turns.append(self.turn1[n])
+                self.turns.append(self.turn2[n])
+            if n >= 8:
+                self.turns.append(self.turn2[n])                
+                self.turns.append(self.turn1[n])
+
+        # for i, e in enumerate(self.turns):
+        #     print(i,e)
+        # exit()
         #self.Start()        
         self.bind('<Return>', self.NextPlayer)        
 
@@ -175,8 +182,11 @@ class App(customtkinter.CTk):
         self.turns[self.active_turn].configure(fg_color=("Green","Green"))
         if self.active_turn > 0:
             self.turns[self.active_turn-1].configure(fg_color=("Grey","Grey"))
-        self.active_turn += 1                
+        print(self.active_turn,self.ap)
+        if self.active_turn == 16:
+            self.ap = 1 + int(self.ap == self.starting_player)
         print(self.ap)
+        self.active_turn += 1                
         self.stop = False
         self.Pause = False
         if self.ap == 1:
